@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Price Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Amazon Price Tracker</h1>
+    
+    <form method="post">
+        <label for="product_name">Enter Product Name:</label>
+        <input type="text" id="product_name" name="product_name" required>
+        <button type="submit">Search</button>
+    </form>
+
+    <h2>Search History</h2>
+    <table border="1" id="price-table">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Current Price</th>
+                <th>Track Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in search_history %}
+            <tr>
+                <td>{{ product[0] }}</td>
+                <td>Rs.{{ product[1] }}</td>
+                <td>
+                    <form action="{{ url_for('track_product', product_id=product[2]) }}" method="get">
+                        <button type="submit">Track Price</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        function fetchLatestPrices() {
+            fetch(`/get_latest_prices?t=${new Date().getTime()}`)
+
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector('#price-table tbody');
+                    tableBody.innerHTML = '';
+                    data.forEach(product => {
+                        const row = document.createElement('tr');
+
+                        const nameCell = document.createElement('td');
+                        nameCell.textContent = product.product_name;
+                        row.appendChild(nameCell);
+
+                        const priceCell = document.createElement('td');
+                        priceCell.textContent = `Rs.${product.price}`;
+                        row.appendChild(priceCell);
+
+                        const trackCell = document.createElement('td');
+                        const trackForm = document.createElement('form');
+                        trackForm.action = `/track/${product.product_id}`;
+                        trackForm.method = 'get';
+                        const trackButton = document.createElement('button');
+                        trackButton.type = 'submit';
+                        trackButton.textContent = 'Track Price';
+                        trackForm.appendChild(trackButton);
+                        trackCell.appendChild(trackForm);
+                        row.appendChild(trackCell);
+
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error("Error fetching data:", error));
+                const currentDate = new Date();
+    const hours = currentDate.getHours();
+    const minutes = currentDate.getMinutes();
+    const seconds = currentDate.getSeconds();
+    
+    const timeString = `${hours}:${minutes}:${seconds}`;
+  
+    console.log("Refreshed at ",timeString);
+        }
+
+        setInterval(fetchLatestPrices, 6000);
+    </script>
+   
+
+</body>
+</html>

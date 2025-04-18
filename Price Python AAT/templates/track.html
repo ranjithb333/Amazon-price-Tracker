@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Price Trend</title>  
+    <script>
+        function refreshGraph() {
+            fetch(`/track/{{ product_id }}?t=${new Date().getTime()}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("priceGraph").src = "data:image/png;base64," + data.graph_url;
+                    console.log("Graph updated at:", new Date().toLocaleTimeString());
+                })
+                .catch(error => console.error("Error fetching graph:", error));
+        }
+
+        setInterval(refreshGraph, 10000);
+    </script>
+</head>
+<body>
+    <h1>Price Trend Over Time</h1>
+    <img id="priceGraph" src="data:image/png;base64,{{ graph_url }}" alt="Price Trend Graph">
+    <br>
+    <a href="{{ url_for('index') }}">Back to Home</a>
+</body>
+</html>
