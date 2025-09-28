@@ -23,9 +23,3 @@ It scrapes product data directly from Amazon and stores price history in a **MyS
 
 ---
 
-## 📦 Installation
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/your-username/amazon-price-tracker.git
-cd amazon-price-tracker
